@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Countdown Application</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+    <div class="flip-clock-container">
+        <div class="flip-clock">
+            <div class="digit black">0</div>
+            <div class="digit black">0</div>
+            <div class="digit black">0</div>
+            <div class="digit white">0</div>
+            <div class="digit white">0</div>
+        </div>
+        <div class="textbox-container">
+            <input type="text" id="codeInput" placeholder="4 8 15 16 23 42" disabled>
+            <button id="executeButton" disabled>execute</button>
+            <!-- Div para exibir a mensagem de erro -->
+            <div id="errorMessage" style="visibility: hidden;">Incorrect code, try again.</div>
+        </div>
+        <div class="ranking-container">
+            <p>Last executed by:</p>
+            <ul id="rankingList"></ul>
+        </div>
+    </div>
+    <div id="customModal" class="modal">
+        <div class="modal-content">
+            <p id="modalText">The DHARMA Initiative thanks you for your participation. Please enter your name to join
+                the list of contributors:</p>
+            <input type="text" id="nameInput" placeholder="Enter your name">
+            <button id="submitNameButton">Submit</button>
+        </div>
+    </div>
+    <!-- Modal Dharma Initiative -->
+    <div id="dharmaModal" class="modal">
+        <div id="dharmaModalContent" class="modal-content">
+            <img src="/assets/The_Dharma_Initiative_-_Station_3_-_The_Swan-logo-EFE586CCD9-seeklogo.com.png"
+                alt="Dharma Logo"> <!-- Substitua pelo caminho da imagem desejada -->
+            <h1>Dharma Initiative</h1>
+            <h3>Swan Station</h3>
+            <a id="orientationLink" href="#" target="_blank"
+                style="color: #00FF00; text-decoration: underline;">Orientation Video</a>
+            <p>
+                The Swan Station, part of the DHARMA Initiative, was created to study the unique electromagnetic
+                properties of the island. Over the years, its purpose has evolved, but maintaining the countdown is
+                still essential for preserving stability. Enter the code and press "Execute" to continue your
+                collaboration.
+            </p>
+            <button id="closeModalButton">OK</button>
+        </div>
+    </div>
+    <!-- Video embutido no modal, inicialmente escondido -->
+    <button id="closeVideoButton">Close</button> <!-- Botão de fechar o vídeo -->
+    <video id="orientationVideo" width="50%" controls style="display:none;">
+        <source src="/videos/swanstation.mp4" type="video/mp4"> <!-- Substitua com o caminho do vídeo -->
+        Your browser does not support the video tag.
+    </video>
+
+
+
+    <audio id="beepSound" src="/sounds/thehatchbeep.mp3" preload="auto"></audio>
+    <audio id="alarmSound" src="/sounds/thehatchalarm.mp3"></audio>
+    <audio id="resetSound" src="/sounds/thehatchtimerreset.mp3"></audio>
+    <audio id="interSound" src="/sounds/thehatchalarmintermitent.mp3" preload="auto" loop></audio>
+    <audio id="emSound" src="/sounds/thehatchem.mp3" preload="auto" loop></audio>
+    <audio id="weirdSound" src="/sounds/thehatchweird.mp3" preload="auto" loop></audio>
+
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/js/script.js"></script>
+</body>
+
+</html>
