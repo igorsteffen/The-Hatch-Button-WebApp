@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const express = require('express');
 const path = require('path');
 const app = express();
@@ -6,11 +8,12 @@ const http = require('http').createServer(app);
 const io = require('socket.io')(http);
 const mongoose = require('mongoose');
 
+
+const dbUser = process.env.DB_USER;
+const dbPassword = process.env.DB_PASS;
+
 // Conecte-se ao MongoDB
-mongoose.connect('mongodb://localhost:27017/countdownApp', {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-});
+mongoose.connect(`mongodb+srv://${dbUser}:${dbPassword}@cluster0.mwtnv.mongodb.net/teste?retryWrites=true&w=majority&appName=Cluster0`);
 
 // Esquema do ranking
 const rankingSchema = new mongoose.Schema({
@@ -21,7 +24,7 @@ const rankingSchema = new mongoose.Schema({
 
 const Ranking = mongoose.model('Ranking', rankingSchema);
 
-let countdownTime = 108 * 60; // 108 minutos em segundos
+let countdownTime = 1.1 * 60; // 108 minutos em segundos
 
 // Middleware para servir arquivos estáticos
 app.use(express.static(path.join(__dirname, 'public')));
@@ -56,7 +59,7 @@ io.on('connection', (socket) => {
     let executionCounter = 0; // Contador global de execuções
     socket.on('submitCode', (code) => {
         if (code === '4 8 15 16 23 42') {
-            countdownTime = 108 * 60;
+            countdownTime = 1.1 * 60;
             io.emit('resetCountdown');
             // Solicitar nome do usuário para o ranking
             socket.emit('requestName');
