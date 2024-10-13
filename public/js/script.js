@@ -71,9 +71,6 @@ function formatTime(seconds) {
     let minutes = Math.floor(seconds / 60);
     let remainingSeconds = seconds % 60;
 
-    //let hours = Math.floor(totalMinutes / 60);
-    //minutes = totalMinutes % 60;
-
     return [
         String(minutes).padStart(3, '0'),
         String(remainingSeconds).padStart(2, '0')
@@ -99,7 +96,7 @@ socket.on('updateRanking', (rankings) => {
 
         // Cria um elemento para o número de execução
         const executionOrderSpan = document.createElement('span');
-        executionOrderSpan.textContent = `#${ranking.executionOrder}`; // Exibe o número de execução
+        executionOrderSpan.textContent = `${ranking.executionOrder}`; // Exibe o número de execução
 
         const nameSpan = document.createElement('span');
         nameSpan.textContent = ranking.name; // Exibe o nome do ranking
@@ -192,7 +189,6 @@ socket.on('resetCountdown', () => {
     clearInterval(colorInterval); // Para de alternar a cor
     document.body.style.backgroundColor = ''; // Reseta a cor do fundo para a padrão
 
-    // Reiniciar o contador e atualizar a interface gráfica
     if (!interSound.paused && !emSound.paused && !weirdSound) {
         interSound.currentTime = 0; // Reseta o som para o início
         interSound.pause(); // Toca o som
@@ -247,7 +243,7 @@ socket.on('errorCode', (message) => {
 
 // Ouvir o evento de solicitar nome do usuário
 socket.on('requestName', () => {
-    // Adicionar um atraso de 2 segundo (2000ms) antes de exibir o modal
+    // Adicionar um atraso de 2 segundo (1000ms) antes de exibir o modal
     setTimeout(() => {
         // Exibir o modal
         const modal = document.getElementById('customModal');
@@ -266,5 +262,5 @@ socket.on('requestName', () => {
                 modal.style.display = 'none';
             }
         };
-    }, 2000);
+    }, 1000);
 });

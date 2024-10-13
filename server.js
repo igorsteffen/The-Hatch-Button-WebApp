@@ -71,7 +71,7 @@ io.on('connection', (socket) => {
     // Salvar o nome do usuário no ranking
     socket.on('submitName', async (name) => {
         if (!name || name.trim() === '' || name === null) {
-            name = 'anonimo';
+            name = 'anonymous';
         }
 
         // Incrementa o contador global de execuções
