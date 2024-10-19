@@ -8,7 +8,7 @@ const http = require('http').createServer(app);
 const io = require('socket.io')(http);
 const mongoose = require('mongoose');
 
-
+//env secrets
 const dbUser = process.env.DB_USER;
 const dbPassword = process.env.DB_PASS;
 
@@ -50,7 +50,6 @@ io.on('connection', (socket) => {
         socket.emit('updateRanking', topRankings);
     });
 
-    // Lógica do código
     socket.on('getRanking', async () => {
         const topRankings = await Ranking.find().sort({ timestamp: -1 }).limit(5);
         socket.emit('updateRanking', topRankings);
@@ -93,7 +92,7 @@ io.on('connection', (socket) => {
     });
 });
 
-http.listen(PORT, () => {
+http.listen(PORT, '0.0.0.0',() => {
     console.log(`Server running on port ${PORT}`);
 });
 

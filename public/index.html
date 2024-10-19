@@ -20,7 +20,6 @@
         <div class="textbox-container">
             <input type="text" id="codeInput" placeholder="4 8 15 16 23 42" disabled>
             <button id="executeButton" disabled>execute</button>
-            <!-- Div para exibir a mensagem de erro -->
             <div id="errorMessage" style="visibility: hidden;">Incorrect code, try again.</div>
         </div>
         <div class="ranking-container">
@@ -40,17 +39,12 @@
     <div id="dharmaModal" class="modal">
         <div id="dharmaModalContent" class="modal-content">
             <img src="/assets/The_Dharma_Initiative_-_Station_3_-_The_Swan-logo-EFE586CCD9-seeklogo.com.png"
-                alt="Dharma Logo"> <!-- Substitua pelo caminho da imagem desejada -->
+                alt="Dharma Logo">
             <h1>Dharma Initiative</h1>
             <h3>Swan Station</h3>
             <a id="orientationLink" href="#" target="_blank"
                 style="color: #00FF00; text-decoration: underline;">Orientation Video</a>
-            <p>
-                The Swan Station, part of the DHARMA Initiative, was created to study the unique electromagnetic
-                properties of the island. Over the years, its purpose has evolved, but maintaining the countdown is
-                still essential for preserving stability. Enter the code and press "Execute" to continue your
-                collaboration.
-            </p>
+            <p style="text-align: center;">Enter the code and press "Execute" to continue your collaboration.</p>
             <button id="closeModalButton">OK</button>
         </div>
     </div>
@@ -61,18 +55,14 @@
         Your browser does not support the video tag.
     </video>
 
-
-
-    <audio id="beepSound" src="/sounds/thehatchbeep.mp3" preload="auto"></audio>
+    <audio id="beepSound" src="/sounds/thehatchbeep.mp3" ></audio>
     <audio id="alarmSound" src="/sounds/thehatchalarm.mp3"></audio>
     <audio id="resetSound" src="/sounds/thehatchtimerreset.mp3"></audio>
-    <audio id="interSound" src="/sounds/thehatchalarmintermitent.mp3" preload="auto" loop></audio>
-    <audio id="emSound" src="/sounds/thehatchem.mp3" preload="auto" loop></audio>
-    <audio id="weirdSound" src="/sounds/thehatchweird.mp3" preload="auto" loop></audio>
-
+    <audio id="interSound" src="/sounds/thehatchalarmintermitent.mp3"></audio>
+    <audio id="emSound" src="/sounds/thehatchem.mp3"></audio>
+    <audio id="weirdSound" src="/sounds/thehatchweird.mp3"></audio>
 
     <script src="/socket.io/socket.io.js"></script>
     <script src="/js/script.js"></script>
 </body>
-
 </html>
