@@ -7,6 +7,7 @@ const PORT = process.env.PORT || 8080;
 const http = require('http').createServer(app);
 const io = require('socket.io')(http);
 const mongoose = require('mongoose');
+let executionCounter = 0; // Contador global de execuções
 
 //env secrets
 const dbUser = process.env.DB_USER;
@@ -42,6 +43,12 @@ setInterval(() => {
     }
 }, 1000);
 
+// Recuperar o contador de execução do banco de dados ao iniciar
+Counter.findOne({ name: 'executionCounter' }).then((doc) => {
+    if (doc) {
+        executionCounter = doc.value; // Recupera o valor atual do contador
+    }
+});
 
 io.on('connection', (socket) => {
     console.log('User connected');
@@ -56,7 +63,6 @@ io.on('connection', (socket) => {
         socket.emit('updateRanking', topRankings);
     });
     
-    let executionCounter = 0; // Contador global de execuções
     
     socket.on('submitCode', (code) => {
         if (code === '4 8 15 16 23 42') {
@@ -78,6 +84,9 @@ io.on('connection', (socket) => {
         // Incrementa o contador global de execuções
         executionCounter++;
 
+        // Atualiza o contador de execuções no banco de dados
+        await Counter.updateOne({ name: 'executionCounter' }, { value: executionCounter });
+
         // Criar um novo registro de execução com a ordem de execução atual
         const newRanking = new Ranking({
             name,
@@ -86,7 +95,7 @@ io.on('connection', (socket) => {
 
         await newRanking.save();
 
-        // Buscar os últimos 10 nomes do ranking
+        // Buscar os últimos 5 nomes do ranking
         const topRankings = await Ranking.find().sort({ executionOrder: -1 }).limit(5);
 
         // Enviar ranking atualizado para todos os usuários
