@@ -7,7 +7,6 @@ const PORT = process.env.PORT || 8080;
 const http = require('http').createServer(app);
 const io = require('socket.io')(http);
 const mongoose = require('mongoose');
-let executionCounter = 0; // Contador global de execuções
 
 //env secrets
 const dbUser = process.env.DB_USER;
@@ -16,22 +15,21 @@ const dbPassword = process.env.DB_PASS;
 // Conecte-se ao MongoDB
 mongoose.connect(`mongodb+srv://${dbUser}:${dbPassword}@cluster0.mwtnv.mongodb.net/teste?retryWrites=true&w=majority&appName=Cluster0`);
 
-// Esquema para armazenar o contador de execução
+// Esquema do ranking
+const rankingSchema = new mongoose.Schema({
+    name: String,
+    timestamp: { type: Date, default: Date.now },
+    executionOrder: { type: Number, default: 1 }
+});
+
+const Ranking = mongoose.model('Ranking', rankingSchema);
+
+// Novo esquema para manter o estado do contador
 const counterSchema = new mongoose.Schema({
-    name: { type: String, default: 'executionCounter' },
-    value: { type: Number, default: 0 }
+    lastExecutionOrder: { type: Number, default: 0 }
 });
 
 const Counter = mongoose.model('Counter', counterSchema);
-
-// Verificar ou criar o contador de execução ao iniciar o servidor
-Counter.findOne({ name: 'executionCounter' }).then((doc) => {
-    if (!doc) {
-        // Se não encontrar, cria um novo
-        const newCounter = new Counter({ name: 'executionCounter', value: 0 });
-        newCounter.save();
-    }
-});
 
 let countdownTime = 5.2 * 60; // 108 minutos em segundos
 
@@ -51,29 +49,43 @@ setInterval(() => {
     }
 }, 1000);
 
-// Recuperar o contador de execução do banco de dados ao iniciar
-Counter.findOne({ name: 'executionCounter' }).then((doc) => {
-    if (doc) {
-        executionCounter = doc.value; // Recupera o valor atual do contador
+let executionCounter = 0; // Contador global de execuções
+
+async function initializeCounter() {
+    const counterDoc = await Counter.findOne();
+    if (counterDoc) {
+        executionCounter = counterDoc.lastExecutionOrder;
+    } else {
+        // Se não houver, cria o primeiro contador
+        const newCounter = new Counter({ lastExecutionOrder: 0 });
+        await newCounter.save();
+        executionCounter = 0;
     }
-});
+}
+
+initializeCounter();
 
 io.on('connection', (socket) => {
     console.log('User connected');
     socket.emit('updateCountdown', countdownTime);
-    
+
     Ranking.find().sort({ timestamp: -1 }).limit(5).then((topRankings) => {
         socket.emit('updateRanking', topRankings);
     });
-    
+
     socket.on('getRanking', async () => {
         const topRankings = await Ranking.find().sort({ timestamp: -1 }).limit(5);
         socket.emit('updateRanking', topRankings);
     });
-    
-    
+
+    // Restabelecer o contador global
+    socket.emit('executionOrder', executionCounter);  // Envia o contador de execuções atual para o cliente
+
     socket.on('submitCode', (code) => {
-        if (code === '4 8 15 16 23 42') {
+        // Expressão regular que lida com os diferentes formatos possíveis
+        const formattedCode = code.replace(/[\s-_\/]/g, ''); // Remove espaços, traços, underscores e barras
+
+        if (formattedCode === '4815162342') {
             countdownTime = 5.2 * 60;
             io.emit('resetCountdown');
             // Solicitar nome do usuário para o ranking
@@ -92,8 +104,8 @@ io.on('connection', (socket) => {
         // Incrementa o contador global de execuções
         executionCounter++;
 
-        // Atualiza o contador de execuções no banco de dados
-        await Counter.updateOne({ name: 'executionCounter' }, { value: executionCounter });
+        // Salva o contador no banco de dados
+        await Counter.updateOne({}, { lastExecutionOrder: executionCounter });
 
         // Criar um novo registro de execução com a ordem de execução atual
         const newRanking = new Ranking({
@@ -111,7 +123,7 @@ io.on('connection', (socket) => {
     });
 });
 
-http.listen(PORT, '0.0.0.0',() => {
+http.listen(PORT, '0.0.0.0', () => {
     console.log(`Server running on port ${PORT}`);
 });
 

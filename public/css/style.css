@@ -28,9 +28,9 @@
     display: none;
     position: fixed;
     z-index: 2;
-    left: 0;
-    top: 0;
-    width: 100%;
+    left: auto;
+    top: auto;
+    width: 70%;
     height: 100%;
     background-color: rgba(0, 0, 0, 0.8);
     display: flexbox;
@@ -134,7 +134,7 @@ body {
 }
 
 .textbox-container {
-    margin-top: 30px;
+    margin-top: 20px;
 }
 
 input#codeInput {
@@ -145,7 +145,7 @@ input#codeInput {
     padding: 5px;
     text-align: left;
     height: auto;
-    width: 300px;
+    width: 328px;
 }
 
 button#executeButton {
@@ -235,4 +235,30 @@ button#executeButton {
 
 #submitNameButton:hover {
     background-color: #45a049;
+}
+
+.hint-container {
+    position: relative;
+    margin-bottom: 0px; /* Distância da palavra "Hint" para a textbox */
+
+}
+
+#hintText {
+    color: #45a049;
+    cursor: pointer; /* Muda o cursor para indicar que é interativo */
+    font-size: 14px;
+    text-decoration: underline;
+    font-weight: 100;
+}
+
+#hintImage {
+    position: absolute;
+    bottom: -150px; /* Posiciona abaixo do "Hint" */
+    right: 112%;
+    width: 400px; /* Ajuste o tamanho da imagem conforme necessário */
+    display: none; /* Imagem oculta por padrão */
+}
+
+.hint-container:hover #hintImage {
+    display: block; /* Exibe a imagem quando o mouse passar sobre o "Hint" */
 }

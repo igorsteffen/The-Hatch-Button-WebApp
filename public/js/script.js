@@ -4,7 +4,7 @@ window.onload = () => {
 
     const closeModalButton = document.getElementById('closeModalButton');
     const video = document.getElementById('orientationVideo');
-    
+
     closeModalButton.onclick = () => { // evento para fechar o modal ao clicar no botão "OK"
         dharmaModal.style.display = 'none'; // Esconde o modal
         video.pause(); // Para o vídeo
@@ -36,7 +36,7 @@ document.getElementById('closeVideoButton').addEventListener('click', () => { //
 
 function initializeRules() {
     const socket = io(); // Conectar ao servidor através do Socket.io
-    
+
     let countdownDisplay = document.querySelectorAll('.digit');
     let errorMessage = document.getElementById('errorMessage');
     const rankingList = document.getElementById('rankingList');
@@ -47,13 +47,25 @@ function initializeRules() {
     const emSound = document.getElementById('emSound');
     const weirdSound = document.getElementById('weirdSound');
     const modal = document.getElementById('customModal');
+    const hintText = document.getElementById('hintText');
+    const hintImage = document.getElementById('hintImage');
     let colorInterval; // Para armazenar o intervalo de mudança de cor
     let isRandomizing = false; // Para controlar se o contador está no modo aleatório
     let randomInterval; // Variável para armazenar o intervalo de randomização
     let isInputActivated = false; // Controla se o input já foi ativado
     let isBeepPlaying = false;
     let isAlarmPlaying = false;
-    
+
+    // Exibe a imagem ao passar o mouse sobre "Hint"
+    hintText.addEventListener('mouseenter', () => {
+        hintImage.style.display = 'block';
+    });
+
+    // Oculta a imagem ao sair do mouse sobre "Hint"
+    hintText.addEventListener('mouseleave', () => {
+        hintImage.style.display = 'none';
+    });
+
     function toggleBackgroundColor() { // Função para alternar entre vermelho e preto
         const currentColor = document.body.style.backgroundColor;
         if (currentColor === 'red') {
@@ -62,7 +74,7 @@ function initializeRules() {
             document.body.style.backgroundColor = 'red';
         }
     }
-    
+
     function formatTime(seconds) { // Função para formatar os segundos como HH:MM:SS
         let minutes = Math.floor(seconds / 60);
         let remainingSeconds = seconds % 60;
@@ -71,14 +83,14 @@ function initializeRules() {
             String(remainingSeconds).padStart(2, '0')
         ];
     }
-    
+
     function randomizeDisplay() { // Função para exibir números aleatórios nos 5 mostradores
         countdownDisplay.forEach((digit) => {
             const randomNum = Math.floor(Math.random() * 10); // Gera um número aleatório entre 0 e 9
             digit.textContent = randomNum;
         });
     }
-    
+
     socket.on('updateRanking', (rankings) => { // Ouvir o evento de atualização do ranking
         rankingList.innerHTML = ''; // Limpa a lista anterior
 
@@ -102,7 +114,7 @@ function initializeRules() {
             rankingList.appendChild(li);
         })
     });
-    
+
     socket.on('updateCountdown', (secondsLeft) => { // Ouvir os eventos do servidor para atualizar o contador
         if (isRandomizing) return;
 
@@ -171,7 +183,7 @@ function initializeRules() {
             isInputActivated = true; // Marca que o input está ativado
         }
     });
-    
+
     socket.on('resetCountdown', () => { // Ouvir o evento de reset e atualizar o contador
         isRandomizing = false; // Sai do modo aleatório
         if (randomInterval) {
@@ -188,7 +200,7 @@ function initializeRules() {
         countdownDisplay[2].textContent = minutes[2];
         countdownDisplay[3].textContent = '0';
         countdownDisplay[4].textContent = '0';
-        
+
         codeInput.disabled = true;
         executeButton.disabled = true;
         document.getElementById('codeInput').value = '';
@@ -209,32 +221,32 @@ function initializeRules() {
 
         socket.emit('getRanking');
     });
-    
+
     document.getElementById('executeButton').addEventListener('click', () => { // evento do envio do código quando o botão 'Execute' é clicado
         const code = document.getElementById('codeInput').value;
         socket.emit('submitCode', code);
     });
-    
+
     document.getElementById('codeInput').addEventListener('keydown', (event) => { // evento do envio do código quando a tecla Enter é pressionada
         if (event.key === 'Enter') {
             const code = document.getElementById('codeInput').value;
             socket.emit('submitCode', code);
         }
     });
-        
+
     socket.on('errorCode', (message) => { // Mostrar mensagem de erro se o código estiver incorreto
         errorMessage.style.visibility = 'visible'; // Mostra a mensagem de erro
         document.getElementById('codeInput').value = '';
         document.getElementById('codeInput').focus();
     });
-    
+
     socket.on('requestName', () => { // Ouvir o evento de solicitar nome do servidor
-        setTimeout(() => {            
+        setTimeout(() => {
             const modal = document.getElementById('customModal');
             modal.style.display = 'block'; // Exibir o modal
-    
+
             let nameSubmitted = false; // Variável para verificar se o nome já foi enviado
-    
+
             // Função para capturar o nome inserido e enviar para o servidor
             function submitName() {
                 if (!nameSubmitted) {
@@ -247,10 +259,10 @@ function initializeRules() {
                     nameSubmitted = true; // Define que o nome já foi enviado
                 }
             }
-    
+
             // Evento de clique no botão de envio
             document.getElementById('submitNameButton').addEventListener('click', submitName);
-    
+
             // Evento para detectar o 'Enter' na caixa de texto
             document.getElementById('nameInput').addEventListener('keydown', (event) => {
                 if (event.key === 'Enter') {
