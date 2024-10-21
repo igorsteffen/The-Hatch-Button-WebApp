@@ -16,14 +16,22 @@ const dbPassword = process.env.DB_PASS;
 // Conecte-se ao MongoDB
 mongoose.connect(`mongodb+srv://${dbUser}:${dbPassword}@cluster0.mwtnv.mongodb.net/teste?retryWrites=true&w=majority&appName=Cluster0`);
 
-// Esquema do ranking
-const rankingSchema = new mongoose.Schema({
-    name: String,
-    timestamp: { type: Date, default: Date.now },
-    executionOrder: { type: Number, default: 1 }
+// Esquema para armazenar o contador de execução
+const counterSchema = new mongoose.Schema({
+    name: { type: String, default: 'executionCounter' },
+    value: { type: Number, default: 0 }
 });
 
-const Ranking = mongoose.model('Ranking', rankingSchema);
+const Counter = mongoose.model('Counter', counterSchema);
+
+// Verificar ou criar o contador de execução ao iniciar o servidor
+Counter.findOne({ name: 'executionCounter' }).then((doc) => {
+    if (!doc) {
+        // Se não encontrar, cria um novo
+        const newCounter = new Counter({ name: 'executionCounter', value: 0 });
+        newCounter.save();
+    }
+});
 
 let countdownTime = 5.2 * 60; // 108 minutos em segundos
 
