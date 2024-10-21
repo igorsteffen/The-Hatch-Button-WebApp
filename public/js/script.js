@@ -36,7 +36,7 @@ document.getElementById('closeVideoButton').addEventListener('click', () => { //
 
 function initializeRules() {
     const socket = io(); // Conectar ao servidor através do Socket.io
-
+    
     let countdownDisplay = document.querySelectorAll('.digit');
     let errorMessage = document.getElementById('errorMessage');
     const rankingList = document.getElementById('rankingList');
@@ -62,7 +62,7 @@ function initializeRules() {
             document.body.style.backgroundColor = 'red';
         }
     }
-
+    
     function formatTime(seconds) { // Função para formatar os segundos como HH:MM:SS
         let minutes = Math.floor(seconds / 60);
         let remainingSeconds = seconds % 60;
@@ -188,7 +188,7 @@ function initializeRules() {
         countdownDisplay[2].textContent = minutes[2];
         countdownDisplay[3].textContent = '0';
         countdownDisplay[4].textContent = '0';
-
+        
         codeInput.disabled = true;
         executeButton.disabled = true;
         document.getElementById('codeInput').value = '';
@@ -221,48 +221,42 @@ function initializeRules() {
             socket.emit('submitCode', code);
         }
     });
-    
-    document.getElementById('submitNameButton').addEventListener('click', () => { // evento do envio do nome do ranking ao clicar no botão 'Submit'
-        let name = document.getElementById('nameInput').value;
-
-        if (!name || name.trim() === '') {
-            name = 'anonymous'; // Se o campo estiver vazio, definir como 'anonymous'
-        }
-        socket.emit('submitName', name);
-        modal.style.display = 'none'; // Esconde o modal
-    });
-    
-    document.getElementById('nameInput').addEventListener('keydown', (event) => { // evento para envio do nome ao pressionar 'Enter' na caixa de texto
-        if (event.key === 'Enter') {
-            let name = document.getElementById('nameInput').value;
-
-            if (!name || name.trim() === '') {
-                name = 'anonymous'; // Se o campo estiver vazio, definir como 'anonymous'
-            }
-            socket.emit('submitName', name);
-            modal.style.display = 'none'; // Esconde o modal
-        }
-    });
-    
+        
     socket.on('errorCode', (message) => { // Mostrar mensagem de erro se o código estiver incorreto
         errorMessage.style.visibility = 'visible'; // Mostra a mensagem de erro
         document.getElementById('codeInput').value = '';
         document.getElementById('codeInput').focus();
     });
     
-    socket.on('requestName', () => { // Ouvir o evento de solicitar nome do usuário        
+    socket.on('requestName', () => { // Ouvir o evento de solicitar nome do servidor
         setTimeout(() => {            
             const modal = document.getElementById('customModal');
             modal.style.display = 'block'; // Exibir o modal
-
-            const submitNameButton = document.getElementById('submitNameButton');            
-            submitNameButton.onclick = () => { // Função para capturar o nome inserido e enviar para o servidor
-                const name = document.getElementById('nameInput').value;
-                if (name) {                    
-                    socket.emit('submitName', name); // Enviar o nome para o servidor                    
+    
+            let nameSubmitted = false; // Variável para verificar se o nome já foi enviado
+    
+            // Função para capturar o nome inserido e enviar para o servidor
+            function submitName() {
+                if (!nameSubmitted) {
+                    let name = document.getElementById('nameInput').value;
+                    if (!name || name.trim() === '') {
+                        name = 'anonymous'; // Se o campo estiver vazio, definir como 'anonymous'
+                    }
+                    socket.emit('submitName', name); // Enviar o nome para o servidor
                     modal.style.display = 'none'; // Fechar o modal
+                    nameSubmitted = true; // Define que o nome já foi enviado
                 }
-            };
-        }, 1000);// Adicionar um atraso de 1 segundo (1000ms) antes de exibir o modal
+            }
+    
+            // Evento de clique no botão de envio
+            document.getElementById('submitNameButton').addEventListener('click', submitName);
+    
+            // Evento para detectar o 'Enter' na caixa de texto
+            document.getElementById('nameInput').addEventListener('keydown', (event) => {
+                if (event.key === 'Enter') {
+                    submitName();
+                }
+            });
+        }, 1000); // Exibir o modal após 1 segundo (1000ms)
     });
 }

@@ -7,7 +7,6 @@ const PORT = process.env.PORT || 8080;
 const http = require('http').createServer(app);
 const io = require('socket.io')(http);
 const mongoose = require('mongoose');
-let executionCounter = 0; // Contador global de execuções
 
 //env secrets
 const dbUser = process.env.DB_USER;
@@ -25,7 +24,7 @@ const rankingSchema = new mongoose.Schema({
 
 const Ranking = mongoose.model('Ranking', rankingSchema);
 
-let countdownTime = 5.3 * 60; // 108 minutos em segundos
+let countdownTime = 5.2 * 60; // 108 minutos em segundos
 
 // Middleware para servir arquivos estáticos
 app.use(express.static(path.join(__dirname, 'public')));
@@ -47,19 +46,21 @@ setInterval(() => {
 io.on('connection', (socket) => {
     console.log('User connected');
     socket.emit('updateCountdown', countdownTime);
-
+    
     Ranking.find().sort({ timestamp: -1 }).limit(5).then((topRankings) => {
         socket.emit('updateRanking', topRankings);
     });
-
+    
     socket.on('getRanking', async () => {
         const topRankings = await Ranking.find().sort({ timestamp: -1 }).limit(5);
         socket.emit('updateRanking', topRankings);
     });
-
+    
+    let executionCounter = 0; // Contador global de execuções
+    
     socket.on('submitCode', (code) => {
         if (code === '4 8 15 16 23 42') {
-            countdownTime = 5.3 * 60;
+            countdownTime = 5.2 * 60;
             io.emit('resetCountdown');
             // Solicitar nome do usuário para o ranking
             socket.emit('requestName');
