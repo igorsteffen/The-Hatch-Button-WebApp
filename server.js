@@ -31,7 +31,7 @@ const counterSchema = new mongoose.Schema({
 
 const Counter = mongoose.model('Counter', counterSchema);
 
-let countdownTime = 108 * 60; // 108 minutos em segundos
+let countdownTime = 5.1 * 60; // 108 minutos em segundos
 
 // Middleware para servir arquivos estáticos
 app.use(express.static(path.join(__dirname, 'public')));
@@ -86,7 +86,7 @@ io.on('connection', (socket) => {
         const formattedCode = code.replace(/[\s-_\/]/g, ''); // Remove espaços, traços, underscores e barras
 
         if (formattedCode === '4815162342') {
-            countdownTime = 108 * 60;
+            countdownTime = 5.1 * 60;
             io.emit('resetCountdown');
             // Solicitar nome do usuário para o ranking
             socket.emit('requestName');
